@@ -85,7 +85,18 @@ jobs:
             --json \
             --output semgrep-results.json \
             .
-
+            
+      - name: Format Semgrep JSON Results
+        if: always()
+        run: |
+            if [ -f semgrep-results.json ]; then
+              python -m json.tool semgrep-results.json --indent 2 > semgrep-results-formatted.json
+              mv semgrep-results-formatted.json semgrep-results.json
+              echo "Semgrep JSON report formatted successfully."
+            else
+              echo "Semgrep JSON report not found; skipping formatting."
+            fi
+      
       - name: Upload Semgrep results
         if: always()
         uses: actions/upload-artifact@v4
